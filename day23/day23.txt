@@ -1,0 +1,827 @@
+Day24
+
+内容回顾：
+	
+	Model
+	    -性能提升
+            在数据库有外键的时候，使用 select_related() 和 prefetch_related()
+            可以很好的减少数据库请求的次数，从而提高性能(以后有。外键操作时，
+            不进行SQL操作，直接从内存中取出来)
+
+            对于一对一字段（OneToOneField）和外键字段（ForeignKey），可以使用select_related 来对QuerySet进行优化
+                citys = City.objects.select_related().all()
+
+            对于多对多字段（ManyToManyField）和一对多字段，可以使用prefetch_related()来进行优化。
+                 zhangs = Person.objects.prefetch_related('visitation')
+		- 数据库操作
+		- 验证(Model较弱，最好使用Form)
+            class A(MOdel):
+                user =
+                email =
+                pwd =
+		
+	Form(day22详细)
+	    input中的name属性值要和form中的字段名相同
+	    from django import forms
+	    from django.forms import fields
+		- class LoginForm(forms.Form):
+			email = fields.EmailField()
+			user = fields.CharField()
+			pwd = fields.CharField()
+
+		错误信息自定制
+		    email = fields.EmailField(error_messages={'required':'邮箱不能为空','invalid':'邮箱格式错误'})
+		参数限制
+		    pwd = forms.CharField(
+		        max_length=12,
+		        min_length=6,
+		        error_messages={'min_length':'密码长度不能小于6','max_length':'密码长度不能大于12'
+		    )
+
+		验证函数：
+			obj = LoginForm(request.POST)
+			res = obj.is_valid()
+			if res:
+			    print(obj.cleaned_data)
+			    models.UserInfo.object.create(**obj.cleaned_data)
+			else:
+			    print(obj.errors)
+			    print(obj.errors.as_json())
+			    #obj.errors继承ErrorDict --> super  Dict
+			    print(obj.errors['user']
+			    print(obj.errors['user'][0]   #user第一个错误信息
+
+		- is_valid -> 每一个字段进行正则(字段内置正则)+clean_字段 -> clean(__all__)  -> _post_clean
+		- cleaned_data 正确信息
+		- error       错误信息
+
+		Forms自动生成标签
+		    get的时候要创建Form对象obj，并传递到前端
+		    和post处理的创建的Form对象名要一致，后台验证返回处理结果后，前端还保留原来用户输入的值
+		    1.<form>
+		        {{obj.user}}    {{obj.errors.user.0}}
+		        {{obj.pwd}}     {{obj.errors.user.0}}
+		        {{obj.email}}   {{obj.errors.user.0}}
+		      </form>
+		    2.<form>
+		        {{obj.as_p}}
+		      </form>
+		    3.<form>
+		        {{obj.as_ul}}
+		      </form>
+		    4.<form>
+		        <table>
+		            {{obj.as_table}}
+		        </table>
+		      </form>
+
+		Form样式设置
+            xxxField 只有验证功能，不能加样式，需要插件
+            from django.forms import widgets
+            email = fields.EmailField(
+                error_messages={'required':'邮箱不能为空','invalid':'邮箱格式错误'},
+                widget=widget.Textarea(attrs={'class':'c1'...}),
+            )
+
+
+        Django内置字段
+            Field
+                required=True,               是否允许为空
+                widget=None,                 HTML插件
+                label=None,                  用于生成Label标签或显示内容
+                    {{obj.user.lable}}
+                initial=None,                初始值
+                help_text='',                帮助信息(在标签旁边显示)
+                error_messages=None,         错误信息 {'required': '不能为空', 'invalid': '格式错误'}
+                show_hidden_initial=False,   是否在当前插件后面再加一个隐藏的且具有默认值的插件（可用于检验两次输入是否一直）
+                validators=[],               自定义验证规则
+                localize=False,              是否支持本地化
+                    #这里使用本地时间，默认使用UTC时间
+                disabled=False,              是否可以编辑
+                label_suffix=None            Label内容后缀
+
+
+            CharField(Field)
+                max_length=None,             最大长度
+                min_length=None,             最小长度
+                strip=True                   是否移除用户输入空白
+
+            IntegerField(Field)
+                max_value=None,              最大值
+                min_value=None,              最小值
+
+            FloatField(IntegerField)
+                ...
+
+            DecimalField(IntegerField)
+                max_value=None,              最大值
+                min_value=None,              最小值
+                max_digits=None,             总长度
+                decimal_places=None,         小数位长度
+
+            BaseTemporalField(Field)
+                input_formats=None          时间格式化
+
+            DateField(BaseTemporalField)    格式：2015-09-01
+            TimeField(BaseTemporalField)    格式：11:12
+            DateTimeField(BaseTemporalField)格式：2015-09-01 11:12
+
+            DurationField(Field)            时间间隔：%d %H:%M:%S.%f
+                ...
+
+            RegexField(CharField)
+                regex,                      自定制正则表达式
+                max_length=None,            最大长度
+                min_length=None,            最小长度
+                error_message=None,         忽略，错误信息使用 error_messages={'invalid': '...'}
+
+            EmailField(CharField)
+                ...
+
+            FileField(Field) ********
+                allow_empty_file=False     是否允许空文件
+
+            ImageField(FileField)
+                ...
+                注：需要PIL模块，pip3 install Pillow
+                以上两个字典使用时，需要注意两点：
+                    - form表单中 enctype="multipart/form-data"
+                    - view函数中 obj = MyForm(request.POST, request.FILES)
+
+            URLField(Field)
+                ...
+
+
+            BooleanField(Field)
+                ...
+
+            NullBooleanField(BooleanField)
+                ...
+
+            ChoiceField(Field)*******
+                ...
+                choices=(),                选项，如：choices = ((0,'上海'),(1,'北京'),)
+                required=True,             是否必填
+                widget=None,               插件，默认select插件
+                label=None,                Label内容
+                initial=None,              初始值
+                help_text='',              帮助提示
+
+
+            ModelChoiceField(ChoiceField)
+                ...                        django.forms.models.ModelChoiceField
+                queryset,                  # 查询数据库中的数据
+                empty_label="---------",   # 默认空显示内容
+                to_field_name=None,        # HTML中value的值对应的字段
+                limit_choices_to=None      # ModelForm中对queryset二次筛选
+
+            ModelMultipleChoiceField(ModelChoiceField)
+                ...                        django.forms.models.ModelMultipleChoiceField
+
+
+
+            TypedChoiceField(ChoiceField)
+                coerce = lambda val: val   对选中的值进行一次转换
+                empty_value= ''            空值的默认值
+
+                MultipleChoiceField(ChoiceField)
+                ...
+
+            TypedMultipleChoiceField(MultipleChoiceField)
+                coerce = lambda val: val   对选中的每一个值进行一次转换
+                empty_value= ''            空值的默认值
+
+            ComboField(Field)
+                fields=()                  使用多个验证，如下：即验证最大长度20，又验证邮箱格式
+                                           fields.ComboField(fields=[fields.CharField(max_length=20), fields.EmailField(),])
+
+            MultiValueField(Field)
+                PS: 抽象类，子类中可以实现聚合多个字典去匹配一个值，要配合MultiWidget使用
+
+            SplitDateTimeField(MultiValueField)
+                input_date_formats=None,   格式列表：['%Y--%m--%d', '%m%d/%Y', '%m/%d/%y']
+                input_time_formats=None    格式列表：['%H:%M:%S', '%H:%M:%S.%f', '%H:%M']
+
+            FilePathField(ChoiceField)     文件选项，目录下所有文件名显示在页面中
+                path,                      文件夹路径
+                match=None,                正则匹配
+                recursive=False,           递归下面的文件夹
+                allow_files=True,          允许文件
+                allow_folders=False,       允许文件夹
+                required=True,
+                widget=None,
+                label=None,
+                initial=None,
+                help_text=''
+
+            GenericIPAddressField
+                protocol='both',           both,ipv4,ipv6支持的IP格式
+                unpack_ipv4=False          解析ipv4地址，如果是::ffff:192.0.2.1时候，可解析为192.0.2.1， PS：protocol必须为both才能启用
+
+            SlugField(CharField)           数字，字母，下划线，减号（连字符）
+                ...
+
+            UUIDField(CharField)           uuid类型
+                ...
+
+
+        常用插件
+            # 单radio，值为字符串
+            # user = fields.CharField(
+            #     initial=2,
+            #     widget=widgets.RadioSelect(choices=((1,'上海'),(2,'北京'),))
+            # )
+
+            # 单radio，值为字符串
+            # user = fields.ChoiceField(
+            #     choices=((1, '上海'), (2, '北京'),),
+            #     initial=2,
+            #     widget=widgets.RadioSelect
+            # )
+
+            # 单select，值为字符串
+            # user = fields.CharField(
+            #     initial=2,
+            #     widget=widgets.Select(choices=((1,'上海'),(2,'北京'),))
+            # )
+
+            # 单select，值为字符串
+            # user = fields.ChoiceField(
+            #     choices=((1, '上海'), (2, '北京'),),
+            #     initial=2,
+            #     widget=widgets.Select
+            # )
+
+            # 多选select，值为列表
+            # user = fields.MultipleChoiceField(
+            #     choices=((1,'上海'),(2,'北京'),),
+            #     initial=[1,],
+            #     widget=widgets.SelectMultiple
+            # )
+
+
+            # 单checkbox
+            # user = fields.CharField(
+            #     widget=widgets.CheckboxInput()
+            # )
+
+
+            # 多选checkbox,值为列表
+            # user = fields.MultipleChoiceField(
+            #     initial=[2, ],
+            #     choices=((1, '上海'), (2, '北京'),),
+            #     widget=widgets.CheckboxSelectMultiple
+            # )
+
+
+        自定义验证规则
+            方式一：
+                from django.forms import Form
+                from django.forms import widgets
+                from django.forms import fields
+                from django.core.validators import RegexValidator
+
+                class MyForm(Form):
+                    user = fields.CharField(
+                        validators=[RegexValidator(r'^[0-9]+$', '请输入数字'), RegexValidator(r'^159[0-9]+$', '数字必须以159开头')],
+                    )
+
+            方式二：
+                import re
+                from django.forms import Form
+                from django.forms import widgets
+                from django.forms import fields
+                from django.core.exceptions import ValidationError
+
+
+                # 自定义验证规则
+                def mobile_validate(value):
+                    mobile_re = re.compile(r'^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$')
+                    if not mobile_re.match(value):
+                        raise ValidationError('手机号码格式错误')
+
+
+                class PublishForm(Form):
+
+
+                    title = fields.CharField(max_length=20,
+                                            min_length=5,
+                                            error_messages={'required': '标题不能为空',
+                                                            'min_length': '标题最少为5个字符',
+                                                            'max_length': '标题最多为20个字符'},
+                                            widget=widgets.TextInput(attrs={'class': "form-control",
+                                                                          'placeholder': '标题5-20个字符'}))
+
+
+                    # 使用自定义验证规则
+                    phone = fields.CharField(validators=[mobile_validate, ],
+                                            error_messages={'required': '手机不能为空'},
+                                            widget=widgets.TextInput(attrs={'class': "form-control",
+                                                                          'placeholder': u'手机号码'}))
+
+                    email = fields.EmailField(required=False,
+                                            error_messages={'required': u'邮箱不能为空','invalid': u'邮箱格式错误'},
+                                            widget=widgets.TextInput(attrs={'class': "form-control", 'placeholder': u'邮箱'}))
+
+            方式三:
+                from django import forms
+                from django.forms import fields
+                from django.forms import widgets
+                from django.core.exceptions import ValidationError
+                from django.core.validators import RegexValidator
+
+                class FInfo(forms.Form):
+                    username = fields.CharField(max_length=5,
+                                                validators=[RegexValidator(r'^[0-9]+$', 'Enter a valid extension.', 'invalid')], )
+                    email = fields.EmailField()
+
+                    def clean_username(self):
+                        """
+                        Form中字段中定义的格式匹配完之后，执行此方法进行验证
+                        :return:
+                        """
+                        value = self.cleaned_data['username']
+                        if "666" in value:
+                            raise ValidationError('666已经被玩烂了...', 'invalid')
+                        return value
+
+            方式四：
+                from django.forms import Form
+                from django.forms import widgets
+                from django.forms import fields
+
+                from django.core.validators import RegexValidator
+
+
+                ############## 自定义字段 ##############
+                class PhoneField(fields.MultiValueField):
+                    def __init__(self, *args, **kwargs):
+                        # Define one message for all fields.
+                        error_messages = {
+                            'incomplete': 'Enter a country calling code and a phone number.',
+                        }
+                        # Or define a different message for each field.
+                        f = (
+                            fields.CharField(
+                                error_messages={'incomplete': 'Enter a country calling code.'},
+                                validators=[
+                                    RegexValidator(r'^[0-9]+$', 'Enter a valid country calling code.'),
+                                ],
+                            ),
+                            fields.CharField(
+                                error_messages={'incomplete': 'Enter a phone number.'},
+                                validators=[RegexValidator(r'^[0-9]+$', 'Enter a valid phone number.')],
+                            ),
+                            fields.CharField(
+                                validators=[RegexValidator(r'^[0-9]+$', 'Enter a valid extension.')],
+                                required=False,
+                            ),
+                        )
+                        super(PhoneField, self).__init__(error_messages=error_messages, fields=f, require_all_fields=False, *args,
+                                                         **kwargs)
+
+                    def compress(self, data_list):
+                        """
+                        当用户验证都通过后，该值返回给用户
+                        :param data_list:
+                        :return:
+                        """
+                        return data_list
+
+                ############## 自定义插件 ##############
+                class SplitPhoneWidget(widgets.MultiWidget):
+                    def __init__(self):
+                        ws = (
+                            widgets.TextInput(),
+                            widgets.TextInput(),
+                            widgets.TextInput(),
+                        )
+                        super(SplitPhoneWidget, self).__init__(ws)
+
+                    def decompress(self, value):
+                        """
+                        处理初始值，当初始值initial不是列表时，调用该方法
+                        :param value:
+                        :return:
+                        """
+                        if value:
+                            return value.split(',')
+                        return [None, None, None]
+
+
+
+        数据初始化：
+            from django.shortcuts import render, redirect
+            from .forms import MyForm
+
+            def index(request):
+                if request.method == "GET":
+                    values = {'user': 'root', 'city': 2}
+                    obj = MyForm(values)
+
+                    return render(request, 'index.html', {'form': obj})
+                elif request.method == "POST":
+                    return redirect('http://www.google.com')
+                else:
+                    return redirect('http://www.google.com')
+
+        对于form表单生生成来说，如果表单过大，每次发送表单的时间就非常久。
+        如果遇到大文件的上传会影响到页面的刷新速度，一般文件上传会和表单上传拆开，
+        只要选中上传的文件，文件就会偷偷的发送到后台，不用和表单一并发送。
+
+
+		related_name是反调名称。
+        打个比方，这段代码里面，category对象时，调.notes就能调到关联他的Node对象。
+        如果不写这个related_name的话，就通过默认的.node_set来掉，就是用模型名称+_set
+	--------> 推荐 <---------
+		
+一、ModelForm
+	参考博客：
+		http://www.cnblogs.com/wupeiqi/articles/6229414.html
+	
+	Model + Form => 验证 + 数据库操作
+	- class LoginModelForm(xxxxx): 
+		 利用model.A中的字段
+    class UserInfoModelForm(forms.ModelForm):
+        is_remember = fields.Charfield(
+            wigdest = Fwigdest.CheckboxInput()#这个字段不在数据库中，但可以用来标记
+            是否保存Session
+        )
+        class Meta:
+            model = models.UserInfo
+            1.fields = '__all__'
+            2.fields = ["username","email"]
+            3.exclued = ["username"]
+        def clean_username(self):#定义验证规则
+            old = self.clean_data["username"]
+            return old
+        实例化：
+            obj = UserInfoModelForm(request.POST)
+        使用：
+            语法与Form一样
+            实现HTML中文label在Model中加属性，verbose_name="用户名"
+
+	ModelForm
+
+        Model + Form ----> 验证 + 数据库操作
+        class UserInfo(models.Model):
+            username = models.CharField(max_length=32,verbose_name='用户名')
+            email = models.EmailField(verbose_name='密码')
+            user_type = models.ForeignKey(to='User_type',to_field='id',verbose_name='类型')
+
+        from django import forms
+        from django.forms import fileds as Ffields
+        from django.forms import widgets as Fwidgets   *
+        class UserInfoModelForm(forms.ModelForm):
+            class Meta:
+                model = models.UserInfo
+                fields = '__all__'                   #生成所有的字段标签
+                #fields = ['username','email']       #生成列表字段的标签
+                #exclude = ['email']                 #生成除了列表字段的标签
+        Meta中的参数
+            class Meta:
+                labels = {
+                    'username':'xxx',
+                    'email':'邮箱',
+                }
+                help_texts={                     # 帮助提示信息
+                    'username':'这里填写用户名',
+                }
+                widgets={                        # 自定义插件,widgets为关键字不能改变，导包时要起别名
+                    'usernmae':Fwidgets.Textarea(attrs={'k':'v'}),
+                }
+                error_messages={             # 自定义错误信息（整体错误信息from django.core.exceptions import NON_FIELD_ERRORS）
+                    '__all__':{
+                        ...
+                    }
+                    'username':{
+                        'required':'用户名不能为空',
+                        'invalid':'用户名不合法'
+                    }
+                }
+                field_classes={               # 自定义字段类 （也可以自定义字段）
+                    'email':Ffields.URLField   #使用form中的类，因为关键字重复，导包时也要起别名
+                }
+                localized_fields=('birth_date',) # 本地化，如：根据不同时区显示数据 UTC --> 东八区时间
+                如：
+                    数据库中
+                        2016-12-27 04:10:57
+                    setting中的配置
+                        TIME_ZONE = 'Asia/Shanghai'
+                        USE_TZ = True
+                    则显示：
+                        2016-12-27 12:10:57
+
+        钩子与（Form一样）:
+            def clean_username(self):
+                old = self.cleaned_data['username']
+                return old
+                #每个字段验证成功之后，可以追加操作
+
+        ModelForm额外字段:
+            例子：一个月免登录,这个字段不用做验证
+                is_rmb = Ffields.CharField(widget=Fwidgets.CheckboxInput())
+
+        函数处理：
+            def user_edit(request, nid):
+                # 获取当前id对象的用户信息
+                # 显示用户已经存在数据
+                if request.method == "GET":
+                    user_obj = models.UserInfo.objects.filter(id=nid).first()
+                    mf = UserInfoModelForm(instance=user_obj)
+                    return render(request,'user_edit.html',{'mf': mf, 'nid': nid})
+                elif request.method == 'POST':
+                    user_obj = models.UserInfo.objects.filter(id=nid).first()
+                    mf = UserInfoModelForm(request.POST,instance=user_obj)
+                    #更新操作需要添加instance参数，创建新数据不需要添加
+                     if mf.is_valid():
+                        # obj.save()        拆分save操作↓↓↓↓↓↓
+                        instance = mf.save(False)  #让save操作失效
+                        instance.save()             #保存当前类
+                        mf.save_m2m()              #保存多对多中间关联表
+                    else:
+                        print(mf.errors.as_json())
+                    return render(request,'user_edit.html',{'mf': mf, 'nid': nid})
+
+        Form -> BaseForm
+        UserInfoModelForm -> ModelForm -> BaseModelForm -> BaseForm
+        BaseForm 中定义了is_valid()、cleaned_data、errors方法
+        验证方法和Form一样
+
+
+
+	Ajax
+        jQuery.Ajax是原生Ajax的封装，它能自动识别浏览器的Ajax对象
+        HttpResponse(status='404',reason='Page Not Found')
+
+        原生Ajax使用
+            function getXHR(){
+                var xhr = null;
+                if(XMLHttpRequest){
+                    xhr = new XMLHttpRequest();
+                }else{
+                    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                return xhr;
+
+            }
+
+            function Ajax1(){
+                var xhr = getXHR();
+                //var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/ajax_json/',true);
+                xhr.onreadystatechange = function(){
+                    if(xhr.readyState == 4){
+                        // 接收完毕
+                        var obj = JSON.parse(xhr.responseText);
+                        console.log(obj);
+                    }
+                };
+                xhr.setRequestHeader('k1','v1');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset-UTF-8'); #设置请求头，指定数据压缩类型
+                xhr.send("name=root;pwd=123");
+            }
+
+        jQueryAjax使用
+
+            $.ajax({
+                url:'/host',
+                type:'post',
+                data:{'k1':123,'k2':'abkck','ip':$.('#IP').val,'k3': JSON.stringify(dicts) },
+
+                type：请求方式，GET、POST（1.9.0之后用method）
+                headers：请求头
+                data：要发送的数据
+                contentType：即将发送信息至服务器的内容编码类型(默认: "application/x-www-form-urlencoded; charset=UTF-8")
+                async：是否异步
+                timeout：设置请求超时时间（毫秒）
+                beforeSend：发送请求前执行的函数(全局)
+                complete：完成之后执行的回调函数(全局)
+                accepts：通过请求头发送给服务器，告诉服务器当前客户端课接受的数据类型
+                dataType：将服务器端返回的数据转换成指定类型
+                                   "xml": 将服务器端返回的内容转换成xml格式
+                                  "text": 将服务器端返回的内容转换成普通文本格式
+                                  "html": 将服务器端返回的内容转换成普通文本格式，在插入DOM中时，如果包含JavaScript标签，则会尝试去执行。
+                                "script": 尝试将返回值当作JavaScript去执行，然后再将服务器端返回的内容转换成普通文本格式
+                                  "json": 将服务器端返回的内容转换成相应的JavaScript对象
+                dataType:'JSON'，
+                #如果列表中有value是列表，或字典。默认JS返回时不能处理需要添加一项关键字
+                traditional:true,
+                success: function(data){                        想当于回调函数
+                    if(data=='OK'){
+                        location.reload();
+                        location.href = '/index/'   -----> http://xxxx/index
+                    }
+                    eles{
+                        xxx
+                    }
+                }
+                error:function(){}            后台获取不到ajax数据时，触发
+            })
+
+            $.get(url="xxx",data={},success='')            和$.ajax一样，只是type=get
+            $.post()
+
+            Ajax后台views处理实例
+            def test_ajax(request):
+                ret = { 'status':True,'error':None,'data':None }
+                try:
+                    h= request.POST.get('hostname')
+                    if h and len(h) > 5 :
+                        model.Host.objects.objects.create(
+                                            hostname=h,
+                                )
+                        else:
+                        ret['status'] = False
+                        ret['error'] = '太短了'
+                except Execption as e:
+                    ret['status'] = False
+                    ret['error'] = '请求错误'
+                return HttpResponse(json.dumps(ret))
+
+            success处理函数
+            ｛
+                    var str = JSON.parse(data)        将字符串反序列化                JSON.stringify(string)  ---->  序列化
+            ｝
+
+             小建议：Ajax数据提交,服务器和浏览器都使用字典作为数据传输，并且序列化。使用状态的时候最后定义一个状态码，分别代表不同意思
+
+                *使用jQeury获取form中的标签值
+                        data ： $('#add_form').serialize(),                form中的标签id和name字段是后台获取数据的对象名
+
+
+        伪Ajax请求（利用iframe特性）
+            <form action="/ajax_json/" method="POST" target="ifm1">
+                <iframe id="ifm1" name="ifm1" ></iframe>
+                <input type="text" name="username" />
+                <input type="text" name="email" />
+                <input type="submit" onclick="sumitForm();" value="Form提交"/>
+            </form>
+            获取iframe的response数据：
+            每次iframe接收到返回的数据时，自动执行onload函数。
+            function sumitForm(){
+                $('#ifm1').load(function(){
+                    var text = $('#ifm1').contents().find('body').text();
+                    var obj = JSON.parse(text);
+                })
+            }
+
+
+
+        3种Ajax使用时机
+		    如果发送的是【普通数据】 -> jQuery > XMLHttpRequest > iframe
+		    如果发送的是【文件数据】 -> iframe支持图片预览 > jQuery > XMLHttpRequest
+
+
+
+    图片验证码
+
+    跨域请求Ajax
+
+
+
+二、Ajax
+	参考博客：
+		http://www.cnblogs.com/wupeiqi/articles/5703697.html
+
+	原生
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/ajax_json/',true);
+        一定要设置请求头setRequestHeader("...")
+	jQuery
+	    1.X版本能自动根据你浏览器的Ajax对象自动生成2.X3.X没有。
+	    区别:
+	        success:function(args,..,封装了XMLHttpResponse对象){...}
+	伪Ajax操作
+	    基于iframe
+	    <form action="/ajax_json/" method="POST" target="ifm1">
+            <iframe id="ifm1" name="ifm1" ></iframe>
+            <input type="text" name="username" />
+            <input type="text" name="email" />
+            <input type="submit" onclick="sumitForm();" value="Form提交"/>
+        </form>
+        获取iframe的response数据：
+            每次iframe接收到返回的数据时，自动执行onload函数。
+            function sumitForm(){
+            $('#ifm1').load(function(){
+                var text = $('#ifm1').contents().find('body').text();
+                var obj = JSON.parse(text);
+            })
+        }
+	
+	时机：
+		如果发送的是【普通数据】 -> jQuery，XMLHttpRequest，iframe
+	
+三、文件上传（预览）
+	
+	- Form提交
+	- Ajax上传文件
+	    发送文件对象
+	        var fileobj = $("#filename")[0];
+            var fd = new FormData();
+            fd.add("username","root");
+            fd.add("filename",fileobj);
+	        xhr.send(fd);
+	
+	时机：
+		如果发送的是【文件】 -> iframe,jQuery(FormData)，XMLHttpRequest(FormData)，
+	
+	
+	
+四、图片验证码 + Session
+	
+	- session
+	- check_code.py(依赖：Pillow,字体文件)
+	- src属性后面加?
+	- 导入 pip3 install Pillow
+	- 创建图片 img = Image.new(mode, size , bg_color)宽度、大小、颜色
+    - 创建画笔 draw = ImageDraw.Draw(img)
+    - 画线、点、字符
+    - 微处理
+    - import BeytIO(在内存中划分一块内存)  将图片存在内存，省去将图片存在文件在重新读的麻烦。
+    - 图片的页面URL如果不改变，那么图片不变，可以在图片的URL的后面加个？改变URL，
+      那么浏览器将刷新图片
+
+五、CKEditor,UEEditor，TinyEditor,KindEditor(***)
+	参考博客：
+		http://www.cnblogs.com/wupeiqi/articles/6307554.html
+		
+	- 基本使用
+	- 文件上传，多文件上传，文件空间管理
+	- XSS 攻击(过滤的函数或类) 下节课说...
+	    页面需要显示不同的样式，但由于XSS页面输出不能渲染，只能在用户提交时数据时，
+	    过滤白名单中的HTML标签
+
+
+
+
+
+六、JSONP
+    天气API：weatherapi.market.xiaomi.com/wtr-v2/weather?cityId=101121301
+    浏览器不允许，从别的域名发送Ajax请求获取数据
+    因为浏览器具有同源策略，这个安全策略使得不能从别的URL获取数据
+    无法阻止<script src="www.xxxxxx.com"></script>请求
+    后门：
+        -创建script标签
+        -src=远程地址
+        -返回的数据必须是JS格式
+            var tag = document.createElement('script');
+            tag.src = 'http://www.jxntv.cn/data/jmd-jxtv2.html?callback=list&_=1454376870403';
+            document.head.appendChild(tag);
+            document.head.removeChild(tag);
+            function list(arg){
+            console.log(arg);
+            }
+    只能发GET请求
+
+
+七、XSS攻击
+    beautifulsoup4过滤
+    import BeautifulSoup
+    soup = BeautifulSoup(content,'html.parser')
+    tag = soup.find("script")
+    tag.clear()
+    content = tag.code()
+    做一个白名单
+
+作业（）：
+
+	主站：
+		http://127.0.0.1:8000/   				博客首页
+		http://127.0.0.1:8000/zhaofan/1.html	某人的某篇博客
+	个人博客：
+		http://127.0.0.1:8000/zhaofan.html					某人的博客
+		http://127.0.0.1:8000/zhaofan/tag/python.html		某人的博客筛选
+		http://127.0.0.1:8000/zhaofan/catetory/mvc.html		某人的博客筛选
+		http://127.0.0.1:8000/zhaofan/date/2011-11.html		某人的博客筛选
+	个人后台管理：
+		http://127.0.0.1:8000/backend/base-info.html
+		http://127.0.0.1:8000/backend/tag.html
+		http://127.0.0.1:8000/backend/category.html
+		http://127.0.0.1:8000/backend/article.html
+		http://127.0.0.1:8000/backend/add-article.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	

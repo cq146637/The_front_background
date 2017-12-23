@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .hide{
+            display: none;
+        }
+        .shadow{
+            position: fixed;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background-color: black;
+            opacity: 0.6;
+            z-index: 9;
+        }
+        .model{
+            position: fixed;
+            top:50%;
+            left:50%;
+            height: 400px;
+            width: 500px;
+            margin-top: -200px;
+            margin-left: -250px;
+            background-color: #eeeeee;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="div">
+        <input type="button" value="全选" onclick="chooesAll();"/>
+        <input type="button" value="反选"/>
+        <input type="button" value="取消"/>
+        <input type="button" value="添加"/>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>选择</th>
+                    <th>IP</th>
+                    <th>端口</th>
+                    <th>选项</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="checkbox"/></td>
+                    <td name="host">192.168.0.1</td>
+                    <td name="port">80</td>
+                    <td><a>修改</a></td>
+                </tr><tr>
+                    <td><input type="checkbox"/></td>
+                    <td name="host">192.168.0.2</td>
+                    <td name="port">8080</td>
+                    <td><a>修改</a></td>
+                </tr><tr>
+                    <td><input type="checkbox"/></td>
+                    <td name="host">192.168.0.3</td>
+                    <td name="port">22</td>
+                    <td><a>修改</a></td>
+                </tr><tr>
+                    <td><input type="checkbox"/></td>
+                    <td name="host">192.168.0.4</td>
+                    <td name="port">25</td>
+                    <td><a>修改</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="shadow hide"></div>
+    <div class="model hide">
+        <input type="text" name="host"/>
+        <input type="text" name="port"/>
+        <input type="button"  value="取消"/>
+    </div>
+
+    <script src="jquery-1.12.4.js"></script>
+    <script>
+        $(".div input[value='全选']").click(function () {
+            $("tbody input").prop("checked",true);
+        });
+        $(".div input[value='取消']").click(function () {
+            $("tbody input").prop("checked",false);
+        });
+        $(".div input[value='反选']").click(function () {
+            $("tbody input[type='checkbox']").each(function () {
+                var v = $(this).prop("checked")?false:true;
+                $(this).prop("checked",v);
+            });
+        });
+        $(".div input[value='添加']").click(function () {
+            $(".shadow,.model").removeClass("hide");
+        });
+        $(".div table a").click(function () {
+            $(".shadow,.model").removeClass("hide");
+            var tds = $(this).parent().prevAll();
+//            -------第一种方法--------
+//            var host = $(tds[1]).text();
+//            var port = $(tds[0]).text();
+//            $(".model input[type='text']").first().val(host).next().val(port);
+//            -------第二种方法--------
+            tds.each(function(){
+               var name = $(this).attr('name');
+               var key = $(this).text();
+               $(".model input[name='"+name+"']").val(key);
+            });
+
+        });
+        $(".model input[value='取消']").click(function () {
+            $(".shadow,.model").addClass("hide");
+            $('.model input[type="text"]').val("");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+CSS补充：
+    - position
+    - background
+    - hover
+    - overflow
+    - z-index
+    - opacity
+    
+    示例：输入框右边放置图标
+
+    返回顶部
+    function GoTop(){
+        document.body.scrollTop=0;
+    }
+
+    background-image:url('1.gif')这种背景图片，只要它的div有多大，
+    就不断的在div中左右上下排列填充整个div
+    只显示一次图片，不堆叠
+        background-repeat:no-repeat
+
+    在一张大的背景图片中，只显示固定位置大小的小图(让图片相对div运动)
+        1.background-position-x: x px
+          background-position-y: x px
+        2.background-position: x px x px
+        3.background:#ddddd(背景颜色) url('x.png') x px(水平) x px(垂直) no-repeat(不堆叠)
+
+    小应用：实现输入框中有个小图标
+        <div style="height: 35px;width: 400px;position: relative;">
+            <input type="text" style="height: 35px;width: 400px;" />
+            <span style="position:absolute;right:0;top:10px;background-image: url(i_name.jpg);height: 16px;width: 16px;display: inline-block;"></span>
+        </div>
+JavaScript：
+    独立的编程语言
+        导入javascript代码
+            <script src='x.js'></javascript>
+        标明javascript代码(type)默认就有
+            <script type='text/javascript'>
+                ******
+            </script>
+        javascript块位置放在body最后，先让内容加载完成在加载动态效果
+
+
+
+
+
+
+
+    局部变量 var
+    基本数据类型：
+        数字
+        字符串
+        数组
+        字典
+        布尔值
+    For循环
+        
+    条件语句
+        ==
+        !=
+        ===
+        !==
+        
+        ||
+        
+        &&
+        
+    函数的定义：
+        function func(){
+            ...
+        }
+Dom
+    
+    找标签
+        - 直接找
+            getElementById("i1")
+            getElementsByClassName();
+            getElementsByName()
+            getElementsByTagName()
+            getElementsByTagNameNS()
+            $('#id')  $('.c1').siblings()
+        - 间接找
+            parentNode          // 父节点
+            childNodes          // 所有子节点
+            firstChild          // 第一个子节点
+            lastChild           // 最后一个子节点
+            nextSibling         // 下一个兄弟节点
+            previousSibling     // 上一个兄弟节点
+            parentElement           // 父节点标签元素
+            children                // 所有子标签
+            firstElementChild       // 第一个子标签元素
+            lastElementChild        // 最后一个子标签元素
+            nextElementtSibling     // 下一个兄弟标签元素
+            previousElementSibling  // 上一个兄弟标签元素
+    操作：
+        
+        innerText  标签中的内容
+        
+        checkbox: 
+            checked=true|false      选择项
+        
+        className
+        classList
+            classList.add()
+            classList.remove()
+        
+    事件：
+        <div onclick='函数(123)'></div>
+        
+        <script>
+            。。。。
+        </script>
+        
+    定时器
+        setInterval('函数()', 4000)
+    
+    其他：
+        
+        alert()
+        console.log()
+    
+实例：
+    莅临指导
+    多选
+    模态对话框
+    左侧菜单
+    返回顶部
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        

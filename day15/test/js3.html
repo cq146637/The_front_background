@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .header{
+            line-height: 48px;
+            background-color: blue;
+            color: white;
+        }
+        .hide{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div style="height: 500px;width: 400px;">
+        <div >
+            <div id="i1" class="header" onclick="ShowMenu('i1') " style="border: 1px solid red;"><label>menu1</label></div>
+                <div class="menu ">item1</div>
+                <div class="menu">item2</div>
+                <div class="menu">item3</div>
+        </div>
+        <div >
+            <div id="i2" class="header" onclick="ShowMenu('i2')" style="border: 1px solid red;"><label>menu2</label></div>
+            <div class="menu hide">item1</div>
+            <div class="menu hide">item2</div>
+            <div class="menu hide">item3</div>
+        </div>
+        <div >
+            <div id="i3" class="header" onclick="ShowMenu('i3')" style="border: 1px solid red;"><label>menu3</label></div>
+            <div class="menu hide">item1</div>
+            <div class="menu hide">item2</div>
+            <div class="menu hide">item3</div>
+        </div>
+        <div >
+            <div id="i4" class="header" onclick="ShowMenu('i4')" style="border: 1px solid red;"><label>menu4</label></div>
+            <div class="menu hide">item1</div>
+            <div class="menu hide">item2</div>
+            <div class="menu hide">item3</div>
+        </div>
+    </div>
+    <script>
+        function ShowMenu(id) {
+            var tag = document.getElementById(id);
+            var  item_list = tag.parentElement.parentElement.children
+            for(var i=0;i<item_list.length;i++){
+                item_list[i].children[1].classList.add("hide");
+                item_list[i].children[2].classList.add("hide");
+                item_list[i].children[3].classList.add("hide");
+            }
+            tag.parentElement.children[1].classList.remove("hide");
+            tag.parentElement.children[2].classList.remove("hide");
+            tag.parentElement.children[3].classList.remove("hide");
+        }
+    </script>
+</body>
+</html>

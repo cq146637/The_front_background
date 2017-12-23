@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .upload{
+            display: inline-block;padding: 10px;
+            background-color: brown;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            z-index: 90;
+        }
+        .file{
+            width: 100px;height: 50px;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div style="position: relative;width: 100px;height: 50px;">
+        <input class="file" type="file" id="aaa" name="aaa" />
+        <a class="upload">上传</a>
+    </div>
+    <form id="form1" action="/upload_file/" method="POST" enctype="multipart/form-data" target="ifm1">
+        <iframe id="ifm1" name="ifm1" style="display: none;"></iframe>
+        <input type="file" name="fafafa" onchange="changeUpalod();" />
+    </form>
+    <div id="preview"></div>
+    <script src="/static/jquery-1.12.4.js"></script>
+    <script>
+        function changeUpalod(){
+            $('#ifm1').load(function(){
+                var text = $('#ifm1').contents().find('body').text();
+                var obj = JSON.parse(text);
+                $('#preview').empty();
+                var imgTag = document.createElement('img');
+                imgTag.src = "/" + obj.data;
+                $('#preview').append(imgTag);
+            });
+            $('#form1').submit();
+        }
+    </script>
+</body>
+</html>

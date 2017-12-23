@@ -1,0 +1,281 @@
+jQuery
+	
+	http://jquery.cuishifeng.cn/
+	
+	模块 《=》类库
+	DOM/BOM/JavaScript的类库
+	
+	版本：
+		1.x  1.12  兼容新强 IE8以及向下版本
+		2.x         忽略IE8一下版本
+		3.x         忽略IE8一下版本
+	
+	转换：
+		jquery对象[0]   =>    Dom对象
+		Dom对象         =>    $(Dom对象)   jquery对象
+	
+	引用jQurey
+	    <script src="jquery-1.12.4.js"></script>
+	一、查找元素
+		DOM
+			10左右
+		jQuery：
+			选择器，直接找到某个或者某类标签
+			1. id
+				$('#id')
+			2. class
+				<div class='c1'></div>
+				$(".c1")
+			3. 标签
+				<div id='i10' class='c1'>
+					<a>f</a>
+					<a>f</a>
+				</div>
+				<div class='c1'>
+					<a>f</a>
+				</div>
+				<div class='c1'>
+					<div class='c2'> </div>
+				</div>
+				
+				$('a')
+				
+			4. 组合a
+				<div id='i10' class='c1'>
+					<a>f</a>
+					<a>f</a>
+				</div>
+				<div class='c1'>
+					<a>f</a>
+				</div>
+				<div class='c1'>
+					<div class='c2'> </div>
+				</div>
+				
+				$('a,.c2,#i10')
+				
+			5. 层级
+				$('#i10 a') 子子孙孙
+				$('#i10>a') 儿子
+				
+			6. 基本
+				:first
+				:last
+				:eq()
+			7. 属性
+				$('[alex]')       具有alex属性的所有标签
+				$('[alex="123"]') alex属性等于123的标签
+				
+			
+				<input type='text'/>
+				<input type='text'/>
+				<input type='file'/>
+				<input type='password'/>
+				
+				$("input[type='text']")
+				$(':text')//只用与input
+
+			
+			实例：
+			    jQeury循环函数
+					jQuery方法内置循环： $('#tb:checkbox').xxxx
+
+				多选，反选，全选
+				- 选择权
+				- 
+					$('#tb:checkbox').prop('checked');        获取值
+					$('#tb:checkbox').prop('checked', true);  设置值
+					
+				- $('#tb:checkbox').each(function(k){
+						// k当前索引
+						// this，DOM，当前循环的元素 $(this)
+						
+					})
+				- var v = 条件 ? 真值 : 假值
+				
+				
+			筛选
+				
+				
+				$('#i1').next()
+				$('#i1').nextAll()
+				$('#i1').nextUntil('#ii1')
+				
+				<div>
+					<a>asdf</a>
+					<a>asdf</a>
+					<a id='i1'>asdf</a>
+					<a>asdf</a>
+					<a id='ii1'>asdf</a>
+					<a>asdf</a>
+				</div>
+				
+				$('#i1').prev()
+				$('#i1').prevAll()
+				$('#i1').prevUntil('#ii1')
+				
+				
+				$('#i1').parent()
+				$('#i1').parents()
+				$('#i1').parentsUntil()
+				
+				$('#i1').children()
+				$('#i1').siblings()
+				$('#i1').find('.class')
+				$('#i1').find('#id')
+				$('#i1').find('element')
+				$('li:eq(1)')
+				$('li').eq(1)   //推荐，不用字符串拼接
+				first()         jQuery对象列表中的第一个
+				last()          jQuery对象列表中的最后一个
+				hasClass(class) 当前jQuery对象是否拥有指定class
+
+		文本操作：
+				$(..).text()           # 获取文本内容
+				$(..).text(“<a>1</a>”) # 设置文本内容
+				
+				$(..).html()
+				$(..).html("<a>1</a>")
+				
+				$(..).val()
+				$(..).val(..)
+		样式操作：
+				$().addClass()
+				$().removeClass()
+				$().toggleClass()    //该方法检查每个元素中指定的类。↓↓↓↓↓↓↓↓
+				//如果不存在则添加类，如果已设置则删除之。这就是所谓的切换效果。
+				
+		属性操作：
+				# 专门用于做自定义属性
+				$(..).attr('n')
+				$(..).attr('n','v')
+				$(..).removeAttr('n')
+				
+				<input type='checkbox' id='i1'  />
+				
+				
+				# 专门用于chekbox,radio
+				$(..).prop('checked')
+				$(..).prop('checked', true)
+				
+				PS: 
+					index 获取索引位置
+				#点击获取元素
+				$('ul').delegate('li','click',function () {}
+					
+		文档处理：
+				append      //截图释义
+				prepend     //截图释义
+				after       //截图释义
+				before      //截图释义
+				
+				remove      //截图释义
+				empty       //截图释义
+				
+				clone       //截图释义
+		css处理
+			
+			$('t1').css('样式名称', '样式值')    //style中的属性
+			点赞：
+				 - $('t1').append()
+				 - $('t1').remove()
+				 - setInterval
+				 - 透明度 1 》 0
+				 - position
+				 - 字体大小，位置
+		位置：
+			$(window).scrollTop()           获取当前标签距离顶部的距离
+			$(window).scrollTop(0)          设置当前标签距离顶部的距离
+			scrollLeft([val])
+			
+			offset().left                 指定标签在 <html> 中的坐标
+			offset().top                  指定标签在 <html> 中的坐标
+			
+			position() 	                  指定标签相对 <父标签> (relative)标签的坐标
+			<div style='relative'>
+				<div>
+					<div id='i1' style='position:absolute;height:80px;border:1px'></div>
+				</div>
+			</div>
+			
+			
+			$('i1').height()           # 获取标签的高度 纯高度
+			$('i1').innerHeight()      # 获取边框 + 纯高度 + ？
+			$('i1').outerHeight()      # 获取边框 + 纯高度 + ？
+			$('i1').outerHeight(true)  # 获取边框 + 纯高度 + ？
+			
+			# 纯高度，边框，外边距，内边距
+			
+		事件
+			DOM： 三种绑定方式
+				jQuery：
+					$('.c1').click()                 //只进行一次绑定如果以后在有新的标签生成则不会具有相同的属性。
+					$('.c1').....
+					
+					$('.c1').bind('click',function(){  //只进行一次绑定如果以后在有新的标签生成则不会具有相同的属性。
+						
+					})
+					
+					$('.c1').unbind('click',function(){
+						
+					})
+					
+					*******************
+					$('.c').delegate('a', 'click', function(){ //代理绑定如果以后在有新的标签生成则具有相同的属性。
+					
+					})
+					$('.c').undelegate('a', 'click', function(){
+					
+					})
+					
+					$('.c1').on('click', function(){  //只进行一次绑定如果以后在有新的标签生成则不会具有相同的属性。
+					
+					})
+					$('.c1').off('click', function(){
+					
+					})
+					
+				阻止事件发生                 如一个a标签有两次跳转，会先执行click事件，
+				                             在click中返回false时，后续的跳转将不会执行。
+					return false
+					
+				# 当页面框架加载完成之后，自动执行
+				如果有图片为能快速加载就会影响到后面的绑定事件的执行
+				$(function(){
+					
+					$(...)
+					
+				})
+				
+		jQuery扩展：
+			- $.extend        $.方法
+			- $.fn.extend     $(..).方法
+			
+			(function(){
+				var status = 1;
+				// 封装变量
+			})(jQuery)
+			
+				
+	二、操作元素
+	
+===》实例：
+
+作业：
+	一：
+			$('i1').height()           # 获取标签的高度 纯高度
+			$('i1').innerHeight()      # 获取边框 + 纯高度 + ？
+			$('i1').outerHeight()      # 获取边框 + 纯高度 + ？
+			$('i1').outerHeight(true)  # 获取边框 + 纯高度 + ？
+			
+			# 纯高度，边框，外边距，内边距
+			
+	二、所有实例敲一遍
+	
+	三、编辑框
+	
+	
+	
+	
+	
+			

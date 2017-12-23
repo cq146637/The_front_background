@@ -1,0 +1,92 @@
+{% extends 'home.html' %}
+
+{% block css %}
+    <style>
+        .filter-org .caption{
+            display: inline-block;
+            margin-left: -100px;
+        }
+        .filter-org .org{
+            border: 1px solid #2459a2;
+            padding: 2px;
+            margin: 0 2px;
+            display: inline-block;
+        }
+        .condition{
+            margin: 2px 0;
+        }
+        .active{
+            background-color: orange;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content%}
+    <div style="text-align: left;font-size: 20px;font-family: 宋体">过滤条件</div>
+    <div class="filter-org" >
+        <div class="caption">组织机构:</div>
+        {% for row in type_list %}
+            <label class="org" types_id="{{ row.id }}">{{ row.category }}</label>
+        {% endfor %}
+    </div>
+    <div class="condition">
+        <label style="display: inline-block" for="name">名称</label>
+        <input type="text" name="name" placeholder="请输入检索名称"/>
+    </div>
+    <div class="condition">
+        <label style="display: inline-block" for="url">URL&nbsp;</label>
+        <input type="text" name="url" placeholder="请输入检索URL"/>
+    </div>
+    <div class="result">
+        {% for row in list %}
+            <p>{{ row.name }}{{ row.url }}{{ row.host }}{{ row.port }}...</p>
+        {% endfor %}
+    </div>
+    <div style="clear: both"></div>
+{% endblock %}
+
+
+{% block js %}
+    <script>
+        $(".org").click(function () {
+            $(this.parentElement.children).each(function () {
+                this.classList.remove('active');
+            });
+            this.classList.add('active');
+            var name = $(":text[name='name']").val();
+            var url = $(":text[name='url']").val();
+            var dic = {};
+            if(name){
+                dic['name']=name;
+            }
+            if(url){
+                dic['url']=url;
+            }
+            var csrf_token = $.cookie('csrftoken');
+            $.ajax({
+                url:'/website/filter'+$(this).attr('types_id')+".html",
+                type:'post',
+                headers:{ 'x-CSRFtoken':csrf_token},
+                data:dic,
+                contentType:"application/x-www-form-urlencoded; charset=UTF-8",
+                dataType:'JSON',
+                traditional:true,
+                success: function(data){
+                    $(".result").empty();
+                    if(data.length){
+                        for(var i=0;i<data.length;i++){
+                            var item = data[i];
+                            $('.result').append("<pre>"+item['name']+item['url']+"\n"+item['ip']+"\t"+item['port']+"\n"+item['verbose']+"</pre>");
+                        }
+                    }
+                    else{
+                        var tag = document.createElement('p');
+                        tag.innerText = "没有该条记录";
+                        $('result').append(tag);
+                    }
+                }
+            });
+        })
+    </script>
+{% endblock %}

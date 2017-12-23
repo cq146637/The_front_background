@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="register.html" method="post" enctype="multipart/form-data">
+        <div style="display: inline-block">
+            <input type="text" name="username" placeholder="用户名"/>
+            <input type="password" name="passwd" placeholder="密码"/>
+        </div>
+        <div>
+            男：<input type="radio" name="gender" value="1"/>
+            女：<input type="radio" name="gender" value="2"/>
+        </div>
+        <div>
+            篮球：<input type="checkbox" name="favor" value="1"/>
+            足球：<input type="checkbox" name="favor" value="2" />
+            羽毛球：<input type="checkbox" name="favor" value="3" />
+        </div>
+        <select name="city">
+            <option value="sh">上海</option>
+            <option value="bj">北京</option>
+            <option value="cd">成都</option>
+            <option value="tj">天津</option>
+        </select>
+        <input type="file" name="file" />
+        <div>
+            <input type="submit" value="提交"/>
+        </div>
+    </form>
+</body>
+</html>

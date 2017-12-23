@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="margin: 0 auto">
+    <div style="background-color: #dddddd;height: 50px;" ></div>
+    <h1>欢迎{{ username }}</h1>>
+    <h1>密码{{ password }}</h1>>
+    <div>
+        <form action="/cmdb/home" method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="用户名"/>
+            <input type="text" name="gender" placeholder="性别"/>
+            <input type="text" name="email" placeholder="邮箱"/>
+            <input type="submit" value="添加"/>
+        </form>
+    </div>
+    <table>
+        {% for item in USERS_LIST %}
+        <tr>
+            <td>{{ item.username }}</td>
+            <td>{{ item.email }}</td>
+            <td>{{ item.gender }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

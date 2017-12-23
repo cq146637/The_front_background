@@ -1,0 +1,21 @@
+EasyUI 和 jQueryUI 大多用于后台管理
+    EasyUI
+        示例丰富。
+        中大多示例不好应用，他对jQuery有修改，并且加入了自己的jQuery扩展，
+        想要应用他的例子不仅要改jQuery，还要改他自己的jQuery，学习代价大，不建议初学者使用。
+
+
+    jQueryUI 例子比较少，样式单一，需要自己修改的地方多
+
+
+
+bootStrap 适用于任何场合，全面，功能强
+    页面审美符合大众，比较精美
+
+
+
+bxSlider  现在只会用他来做滚动大屏（轮播图）
+
+
+
+他们的jQuery都依赖与JS的jQuery

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="i1" style="height: 100px;width: 80%;font-size: 80px;color: red">欢迎老男孩老师莅临指导</div>
+    <script>
+        function func() {
+            var tag = document.getElementById("i1");
+            var context = tag.innerText;
+            s = context.charAt(0);
+            l = context.substring(1,context.length);
+            new_context = l + s;
+            tag.innerText = new_context;
+        }
+        setInterval("func()",800);
+    </script>
+</body>
+</html>

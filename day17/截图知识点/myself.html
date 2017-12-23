@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="./font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bootstrap.min.css">
+	<link rel="stylesheet" href="mycss.css">
+</head>
+<body>
+    <div class="pg-header">
+        <div class="logo ">network engineering specialty</div>
+        <div class="front">陈乾</div>
+        <div class="user">
+            <i class="fa fa-user-o" aria-hidden="true"></i>
+            <img src="22.jpg">
+            <div class="a">
+                <div>个人信息</div>
+                <div>管理权限</div>
+                <div>注销</div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="a">
+                <i class="fa fa-bell-o" aria-hidden="true"></i>
+                <span class="c">0</span>
+            </div>
+        </div>
+    </div>
+    <div class="pg-bodyleft">
+        <div class="item">
+            <div id='i1' class="header" onclick="ChangeMenu('i1');">我的介绍</div>
+            <div class="content">
+                <div>家庭</div>
+                <div>学校</div>
+                <div>工作</div>
+            </div>
+        </div>
+        <div class="item">
+            <div id='i2' class="header" onclick="ChangeMenu('i2');">我的经历</div>
+            <div class="content hide">
+                <div>社交经历</div>
+                <div>实习经历</div>
+                <div>项目经历</div>
+            </div>
+        </div>
+        <div class="item">
+            <div id='i3' class="header" onclick="ChangeMenu('i3');">我的规划</div>
+            <div class="content hide">
+                <div>近期目标</div>
+                <div>长期目标</div>
+                <div>终生目标</div>
+            </div>
+        </div>
+        <div class="item">
+            <div id='i4' class="header" onclick="ChangeMenu('i4');">我的兴趣</div>
+            <div class="content hide">
+                <div>我最爱的运动</div>
+                <div>我参加的比赛</div>
+                <div>我获得的奖励</div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-center">
+		<div>
+			<div>
+				<button class="btn btn-primary" type="button">
+				  Messages <span class="badge">4</span>
+				</button>
+			</div>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<p>我的信息</p>
+			<div style="margin-left: 700px">
+				<ul class="nav nav-pills">
+				  <li role="presentation"><a href="#">上一页</a></li>
+				  <li role="presentation" class="active"><a href="#">1</a></li>
+				  <li role="presentation"><a href="#">2</a></li>
+				  <li role="presentation"><a href="#">3</a></li>
+				  <li role="presentation"><a href="#">下一页</a></li>
+				</ul>
+			</div>
+		</div>
+        <hr color="#8EE5EE" size="1"/>
+        <div class="py-center-bottom">
+            <div>关于我们|联系我们|服务条款|隐私政策|意见与反馈|友情链接|公告</div>
+            <div>违法和不良信息举报： 电话：010-58302039 邮箱：seven@163.com</div>
+            <div>版权所有：站长</div>
+        </div>
+    </div>
+    <div class="pg-right">
+        <img src="2.jpg" />
+    </div>
+    <script>
+        function ChangeMenu(nid) {
+            var current_header = document.getElementById(nid);
+            var item_list = current_header.parentElement.parentElement.children;
+            for(var i=0;i<item_list.length;i++){
+                var current_item = item_list[i];
+                current_item.children[1].classList.add('hide');
+            }
+            current_header.nextElementSibling.classList.remove('hide');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        img{
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="http://www.oldboyedu.com" id="i1">欢迎光临</a>
+    <a href="http://www.oldboyedu.com">
+        <img src="1.jpg" style="width: 200px;height: 300px;">
+    </a>
+    <script type='text/javascript'>
+        function add(){
+            var obj = document.getElementById("i1");
+
+            console.log(obj.innerText);
+            var str = obj.innerText;
+            var star = str.charAt(0);
+            var newStr = str.substring(1,str.length) + star;
+            obj.innerText = newStr;
+        }
+        setInterval('add()',2000);
+    </script>
+</body>
+</html>

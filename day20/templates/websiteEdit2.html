@@ -1,0 +1,79 @@
+{% extends 'home.html' %}
+
+{% block css %}
+    <style>
+        .edit-obj{
+
+        }
+        .edit-obj table{
+            margin-left: 100px;
+            border-right: 1px solid grey;
+            border-bottom: 1px solid grey;
+        }
+        .edit-obj table th{
+            border-left: 1px solid grey;
+            border-top: 1px solid grey;
+            text-align: center;
+        }
+        .edit-obj table td{
+            border-left: 1px solid grey;
+            border-top: 1px solid grey;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+{% block content%}
+    <ul class="nav nav-tabs nav-justified">
+      <li role="presentation"><a href="/website/edit1/">网站管理</a></li>
+      <li role="presentation" class="active"><a href="/website/edit2/">组织管理</a></li>
+    </ul>
+    <div class="edit-obj">
+        <table>
+            <caption>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default btn-info" onclick="checkAll();">全选</button>
+                    <button type="button" class="btn btn-default btn-info" onclick="reverseAll();">反选</button>
+                    <button type="button" class="btn btn-default btn-info" onclick="cancleAll();">取消</button>
+                    <button type="button" class="btn btn-default btn-success" onclick="createOne();">新建</button>
+                    <button type="button" class="btn btn-default btn-danger" onclick="deleteAll();">删除</button>
+                    <button type="button" class="btn btn-default btn-primary" onclick="editOne();">编辑</button>
+                </div>
+            </caption>
+            <thead>
+                <tr>
+                    <th>选项</th>
+                    <th>序号</th>
+                    <th>组织</th>
+                    <th style="display: none;">ID</th>
+                </tr>
+            </thead>
+            <tbody id="tb">
+                {% for row in list %}
+                    <tr>
+                        <td><input type="checkbox" /></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ row.category }}</td>
+                        <td style="display: none;">{{ row.id }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function checkAll() {
+            $('#tb :checkbox').prop('checked',true);
+        }
+        function cancleAll() {
+            $('#tb :checkbox').prop('checked',false);
+        }
+        function reverseAll() {
+            $(':checkbox').each(function(k){
+                var v = $(this).prop('checked')?false:true;
+                $(this).prop('checked',v);
+            })
+        }
+    </script>
+{% endblock %}

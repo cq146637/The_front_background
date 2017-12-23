@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>split_pages</title>
+    <style>
+        .page{
+            color: #0e90d2;
+        }
+        .page a{
+            border: 1px solid deepskyblue;
+            margin: 2px 10px;
+            text-align: center;
+            display: inline-block;
+        }
+        .active{
+            background-color: yellow;
+        }
+        #jump_page{
+            width: 30px;
+            padding-top: 3px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <ol>
+        {% for i in list %}
+            <li>{{ i }}</li>
+        {% endfor %}
+    </ol>
+    <div>调节输出列表数</div>
+    <div>
+        <select id='ss1' onchange="choice(this)">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+        </select>
+    </div>
+    <div class="page">
+        {{  page_str  }}
+    </div>
+    <script src="/static/jquery-1.12.4.js"></script>
+    <script src="/static/jquery.cookie.js"></script>
+    <script>
+        $(function () {
+            var count = $.cookie('every_page_count');
+            var s = "#ss1 [value="+count+"]";
+            $(s).attr('selected','selected');
+        });
+        function choice(ths) {
+            var v = $(ths).val();
+            $.cookie('every_page_count',v,{'path':"/a/pages"});
+            var url = '{{ path_info }}?pid='+1;
+            location.href=url;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+{% extends 'home.html' %} 继承哪一个文件
+{% block css %}
+    <style>
+         .pg-center-content table{
+             margin-left: 5px;
+             margin-top: 20px;
+        }
+        .page{
+            color: #0e90d2;
+        }
+        .page a{
+            border: 1px solid deepskyblue;
+            margin: 2px 10px;
+            text-align: center;
+            display: inline-block;
+        }
+        .active{
+            background-color: yellow;
+        }
+        #jump_page{
+            width: 30px;
+            padding-top: 3px;
+            font-size: 15px;
+        }
+    </style>
+{% endblock %}
+
+{% block content%}
+    <h4>站点总览</h4>
+    <table border="1px solid red" style="text-align: center;">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th style="width: 100px;">组织机构</th>
+                <th style="width: 500px;">站点名称</th>
+                <th style="width: 300px;">URL</th>
+                <th style="width: 100px;">IP</th>
+                <th style="width: 100px;">端口</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in list %}
+                <tr>
+                    <td>{{ forloop.counter}}</td>
+                    <td>{{ row.types.category }}</td>
+                    <td>{{ row.name }}</td>
+                    <td><a href="{{ row.url }}" target="_blank">{{ row.url }}</a></td>
+                    <td><a>{{ row.ip }}</a></td>
+                    <td>{{ row.port }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="clear: both"></div>
+    <div style="margin-top: 20px;">
+        <label>每页显示条数</label>
+        <select id='ss1' onchange="choice(this)">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+        </select>
+    </div>
+    <div class="page">
+        {{  page_str  }}
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            var count = $.cookie('every_page_count');
+            var s = "#ss1 [value="+count+"]";
+            $(s).attr('selected','selected');
+        });
+        function choice(ths) {
+            var v = $(ths).val();
+            $.cookie('every_page_count',v,{'path':"/website/show/"});
+            var url = '{{ path_info }}?pid='+1;
+            location.href=url;
+        }
+    </script>
+{% endblock %}

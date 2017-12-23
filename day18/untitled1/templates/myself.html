@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-responsive.min.css">
+    <style>
+        .pg-header{
+            height: 48px;
+            position: fixed;
+            top:0;
+            left:0;
+            right:0;
+            background-color: #8EE5EE;
+            clear: both;
+            z-index: 10;
+        }
+        .pg-header .logo{
+            width: 200px;
+            color: white;
+            line-height: 48px;
+            text-align: center;
+            float: left;
+            font-family: "Angsana New";
+            font-size: 24px;
+        }
+        .pg-header .front{
+            float: right;
+            text-align: center;
+            line-height: 48px;
+            margin-right: 20px;
+            color: white;
+            width: 40px;
+        }
+        .pg-header .user img{
+            height: 40px;
+            width: 40px;
+            float: right;
+            margin-right: 0px;
+            margin-top: 4px;
+            padding: 0 10px;
+            border-radius: 50%;
+        }
+        .pg-header .user:hover{
+            background-color: #2459a2;
+        }
+        .pg-header .user:hover .a{
+            display: block;
+        }
+        .pg-header .user{
+            height:48px;
+            width: 80px;
+            float: right;
+        }
+        .pg-header .user i{
+            margin-top: 16px;
+            margin-left: 5px;
+            float: left;
+        }
+        .pg-header .user .a{
+            height:60px;
+            width: 80px;
+            font-size: 12px;
+            background-color:honeydew;
+            margin-right: -70px;
+            margin-top: 48px;
+            z-index: 20;
+            display: none;
+        }
+        .pg-header .item{
+            padding: 0 10px;
+            height: 48px;
+            width: 40px;
+            float: right;
+            line-height: 48px;
+        }
+        .pg-header .item .c{
+            border-radius: 50%;
+            display: inline-block;
+            padding: 10px 4px;
+            line-height: 1px;
+            background-color: red;
+        }
+        .pg-header .item:hover{
+            background-color: #2459a2;
+        }
+        .pg-bodyleft{
+            position: absolute;
+            width: 200px;
+            top: 48px;
+            left:0;
+            bottom: 0px;
+            background-color: honeydew;
+            float: left;
+        }
+        .hide{
+            display: none;
+        }
+        .pg-bodyleft .item .header{
+            height: 35px;
+            background-color: #AEEEEE;
+            color: white;
+            line-height: 35px;
+        }
+        .pg-center{
+            position: absolute;
+            left:200px;
+            top: 48px;
+            right:200px;
+            float: right;
+            z-index: 9;
+            bottom: 0px;
+            overflow: auto;
+            background-color: honeydew;
+            border: 1px solid #AEEEEE;
+        }
+        .pg-center p{
+            text-align: center;
+        }
+        .pg-right{
+            position: absolute;
+            width:200px;
+            top: 48px;
+            right:0;
+            bottom: 0px;
+            background-color: pink;
+            float: right;
+            z-index: 9;
+        }
+        .pg-right img{
+            width:200px;
+            height: 100%;
+            overflow: hidden;
+        }
+        .py-center-bottom{
+            text-align: center;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pg-header">
+        <div class="logo ">network engineering specialty</div>
+        <div class="front">陈乾</div>
+        <div class="user">
+            <i class="fa fa-user-o" aria-hidden="true"></i>
+            <img src="/static/image/22.jpg">
+            <div class="a">
+                <div>个人信息</div>
+                <div>管理权限</div>
+                <div>注销</div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="a">
+                <i class="fa fa-bell-o" aria-hidden="true"></i>
+                <span class="c">0</span>
+            </div>
+        </div>
+    </div>
+    <div class="pg-bodyleft">
+        <div class="item">
+            <div id='i1' class="header" onclick="ChangeMenu('i1');">我的介绍</div>
+            <div class="content">
+                <div>家庭</div>
+                <div>学校</div>
+                <div>工作</div>
+            </div>
+        </div>
+        <div class="item">
+            <div id='i2' class="header" onclick="ChangeMenu('i2');">我的经历</div>
+            <div class="content hide">
+                <div>社交经历</div>
+                <div>实习经历</div>
+                <div>项目经历</div>
+            </div>
+        </div>
+        <div class="item">
+            <div id='i3' class="header" onclick="ChangeMenu('i3');">我的规划</div>
+            <div class="content hide">
+                <div>近期目标</div>
+                <div>长期目标</div>
+                <div>终生目标</div>
+            </div>
+        </div>
+        <div class="item">
+            <div id='i4' class="header" onclick="ChangeMenu('i4');">我的兴趣</div>
+            <div class="content hide">
+                <div>我最爱的运动</div>
+                <div>我参加的比赛</div>
+                <div>我获得的奖励</div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-center">
+        <div style="float: right">
+            <button class="btn btn-primary" type="button">
+              Messages <span class="badge">4</span>
+            </button>
+        </div>
+        <p style="float: left">
+            <ul class="nav nav-pills">
+              <li role="presentation" class="active"><a href="#">Home</a></li>
+              <li role="presentation"><a href="#">Profile</a></li>
+              <li role="presentation"><a href="#">Messages</a></li>
+            </ul>
+        </p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <p>我的信息</p>
+        <hr color="#8EE5EE" size="1"/>
+        <div class="py-center-bottom" style="margin-left: 50px">
+            <div>关于我们|联系我们|服务条款|隐私政策|意见与反馈|友情链接|公告</div>
+            <div>违法和不良信息举报： 电话：010-58302039 邮箱：seven@163.com</div>
+            <div>版权所有：站长</div>
+        </div>
+    </div>
+    <div class="pg-right">
+        <img src="/static/image/2.jpg" />
+    </div>
+    <script src="/static/jquery-1.12.4.js"></script>
+    <script>
+        function ChangeMenu(nid){
+            var current_header = document.getElementById(nid);
+            var item_list = current_header.parentElement.parentElement.children;
+            for(var i=0;i<item_list.length;i++){
+                var current_item = item_list[i];
+                current_item.children[1].classList.add('hide');
+            }
+            current_header.nextElementSibling.classList.remove('hide');
+        }
+    </script>
+</body>
+</html>

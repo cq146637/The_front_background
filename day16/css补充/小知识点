@@ -1,0 +1,25 @@
+1。后台管理布局
+    左：
+        pisiton absolute
+    右：
+        position absolute
+        场景一：<div>
+                    内容
+                </div>
+        左侧只是一次固定，页面往下拉时，左侧上移
+        场景二：
+                overflow：auto
+2。防止页面缩小变形
+       添加最小宽度   min-width：x px
+3。圆形图片
+        border-radius: 50%
+4。鼠标进入某个标签的时候，为它里面的子标签加上某个样式
+        .pg-header:hover .b{
+            background-color:blue;
+        }
+5。font-awesome-4.7.0 只需要CSS就够了
+    导入CSS目录下面的CSS文件就能使用图标了
+    <link rel="stylesheet" href="../font-awesome-4.7.0/css/font-awesome.min.css">
+    引用：可以在官网上查看使用说明   fontawesome.io/icons/
+    <i class="fa fa-superpowers" aria-hidden="true"></i>
+6。

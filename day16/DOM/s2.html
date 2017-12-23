@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="i1">
+        <p ><input type="button" value="+" onfocus="AddEle();"/></p>
+    </div>
+    <script>
+        function AddEle(){
+            var tag = document.createElement("input");
+            tag.setAttribute("type","text");
+            var p = document.createElement("p");
+            var hr = document.createElement("hr");
+            p.appendChild(hr);
+            p.appendChild(tag);
+            document.getElementById("i1").appendChild(p);
+        }
+    </script>
+</body>
+</html>

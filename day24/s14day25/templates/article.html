@@ -1,0 +1,39 @@
+{% load filter %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .condition a{
+            display: inline-block;
+            padding: 3px 5px;
+            border: 1px solid #dddddd;
+            margin: 5px ;
+        }
+        .condition a.active{
+            background-color: brown;
+        }
+    </style>
+</head>
+<body>
+    <h1>过滤条件</h1>
+    <div class="condition">
+        <div>
+            {% filter_all arg_dict 'article_type_id' %}
+            {% filter_article_type article_type_list arg_dict %}
+        </div>
+
+        <div>
+            {% filter_all arg_dict 'category_id' %}
+            {% filter_category_type category_list arg_dict %}
+        </div>
+    </div>
+    <h1>查询结果</h1>
+    <ul>
+        {% for row in result %}
+            <li>{{ row.id }}-{{ row.title }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

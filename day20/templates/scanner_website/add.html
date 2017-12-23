@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加需要扫描的网站</title>
+</head>
+<body>
+    <form action="/add/" method="post">
+        {% csrf_token %}
+        <p><label>网站名称</label><input type="text" name="name"></p>
+        <p><label>网站URL</label><input type="text" name="url"></p>
+        <p><label>组织</label><input type="text" name="types"></p>
+        <p><input type="submit" value="提交"/> <input type="reset" value="重置"></p>
+    </form>
+</body>
+</html>

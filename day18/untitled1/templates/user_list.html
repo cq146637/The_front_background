@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .pagination .page{
+            display: inline-block;
+            padding: 5px;
+            background-color: cyan;
+            margin: 5px;
+        }
+        .pagination .page.active{
+            background-color: brown;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        {% for item in li %}
+            {% include 'li.html' %}
+        {% endfor %}
+    </ul>
+    <div>
+        <select id="ps" onchange="changePageSize(this)">
+            <option value="10">10</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+    <div class="pagination">
+        {{ page_str }}
+        <div class="page">
+            第<input type="text" style="width: 30px;" />页
+        </div>
+        <a class="page">跳转</a>
+    </div>
+    <script src="/static/jquery-1.12.4.js"></script>
+    <script src="/static/jquery.cookie.js"></script>
+    <script>
+
+        $(function(){# 当页面加载完成时，动态显示数据条数 #}
+                var v = $.cookie('per_page_count', {'path': "/user_list/`"});
+                $('#ps').val(v);
+        });
+
+        function changePageSize(ths){
+            var v = $(ths).val();
+            console.log(v);
+            $.cookie('per_page_count',v, {'path': "/user_list/"});
+            location.reload();
+        }
+        $(".pagination").children().last().click(function () {
+            var pg_count = $(".pagination div [type='text']").val();
+            if(pg_count>0&&pg_count<{{ count }}+1){
+                location.href = "/cmdb/user_list/?p="+pg_count;
+            }
+        })
+    </script>
+</body>
+</html>

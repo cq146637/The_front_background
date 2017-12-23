@@ -1,0 +1,424 @@
+day22
+http://www.cnblogs.com/wupeiqi/articles/5246483.html
+
+知识点概要
+    - Session
+    - CSRF
+    - Model操作
+    - Form验证（ModelForm）
+    - 中间件
+    - 缓存
+    - 信号
+
+
+内容详细：
+
+1. Session
+	基于Cookie做用户验证时：敏感信息不适合放在cookie中
+	
+
+    a. Session原理
+		Cookie是保存在用户浏览器端的键值对
+		Session是保存在服务器端的键值对
+	        SessionID对应一个随机字符串，将随机字符串发给用户浏览器端cookie，两者通过随机字符串交流
+            内存，数据库，文件
+
+    b. Cookie和Session对比
+    
+    c. Session配置(缺少cache)
+    
+    d. 示例：实现两周自动登陆
+            - request.session.set_expiry(60*10)
+            - SESSION_SAVE_EVERY_REQUEST = True
+
+    PS: cookie中不设置超时时间，则表示关闭浏览器自动清除
+	
+	
+	- session依赖于cookie
+	- 浏览器端对服务器session操作
+		request.session.get()
+		request.session[x] = x   #首先从数据库获取session，然后根据随机字符串查找当前对象的相关信息
+		request.session.clear()
+		
+	- 配置文件中设置默认操作（通用配置）在settings文件中直接配置生效：
+
+	    ☆☆☆☆☆无论是什么引擎都适用☆☆☆☆☆
+
+        SESSION_COOKIE_NAME ＝ "sessionid"              # Session的cookie保存在浏览器上时的key，即：sessionid＝随机字符串（默认）
+        SESSION_COOKIE_PATH ＝ "/"                      # Session的cookie保存的路径（默认）
+        SESSION_COOKIE_DOMAIN = None                    # Session的cookie保存的域名（默认）
+        SESSION_COOKIE_SECURE = False                   # 是否Https传输cookie（默认）
+        SESSION_COOKIE_HTTPONLY = True                  # 是否Session的cookie只支持http传输（默认）
+        SESSION_COOKIE_AGE = 1209600                    # Session的cookie失效日期（2周）（默认）
+        SESSION_EXPIRE_AT_BROWSER_CLOSE = False         # 是否关闭浏览器使得Session过期（默认）
+		# set_cookie('k',123)不指定超时时间默认关闭浏览器失效
+        SESSION_SAVE_EVERY_REQUEST = False              # 是否每次请求都保存Session，默认修改之后才保存（默认），
+                                                          如果指定10S失效，那么一定要等10s不动才会失效，一直有操作则cookie不会失效
+
+    -使用
+        def index(request):
+        # 获取、设置、删除Session中数据
+        request.session['k1']
+        request.session.get('k1',None)
+        request.session['k1'] = 123
+        request.session.setdefault('k1',123) # 存在则不设置
+        del request.session['k1']
+        request.session.clear()#注销时使用
+            request.session.delete(request.session.session_key)
+
+        # 所有 键、值、键值对
+        request.session.keys()
+        request.session.values()
+        request.session.items()
+        request.session.iterkeys()
+        request.session.itervalues()
+        request.session.iteritems()
+
+
+        # 用户session的随机字符串
+        request.session.session_key
+
+        # 将所有Session失效日期小于当前日期的数据删除
+        request.session.clear_expired()
+
+        # 检查 用户session的随机字符串 在数据库中是否
+        request.session.exists("session_key")
+
+        # 删除当前用户的所有Session数据
+        request.session.delete("session_key")
+
+        ☆☆☆☆request.session.set_expiry(value)☆☆☆☆
+            * django的session默认的超时时间是两周
+            * 如果value是个整数，session会在些秒数后失效。
+            * 如果value是个datatime或timedelta，session就会在这个时间后失效。
+            * 如果value是0,用户关闭浏览器session就会失效。
+            * 如果value是None,session会依赖全局session失效策略。
+
+
+	- 引擎的配置
+        SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # 引擎 cache，db(缓存，数据库)
+        SESSION_ENGINE = 'django.contrib.sessions.backends.cache_db'  # 引擎 cache+db(缓存，数据库)
+        SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'  # 引擎 加密cookie，session
+        SESSION_CACHE_ALIAS = 'default'                            # 使用的缓存别名（默认内存缓存，也可以是memcache），此处别名依赖缓存的设置
+            CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': [
+                '172.19.26.240:11211',
+                '172.19.26.242:11211',
+            ]
+            'LOCATION': 'unix:/tmp/memcached.sock',
+        }
+    }
+2. CSRF
+    如果settings中没有注释CSRF，那么所有的POST请求都必须带上CSRF
+    a. CSRF原理
+        浏览器端第一次GET页面时，服务器返回数据时会加上CSRF的随机字符串。下次在本页面POST请求时，必须携带CSRF的请求头
+        请求头中不允许有下划线命名，否则是非法的
+        POST提交时，服务器端首先验证CSRF-token
+    b. 无CSRF时存在隐患
+
+    c. Form提交（CSRF）
+        {% csrf_token %}随机生成的，与和服务生成的csrf随机字符串是不一样的
+    d. Ajax提交（CSRF）
+        CSRF请求头 X-CSRFToken
+        先获取COOKIES中的CSRF随机字符串，然后放到请求头中发给服务器端
+        1.每个Ajax请求函数中添加 headers: {'X-CSRFtoken': $.cookie('csrftoken')}
+        2.在一个HTML页面中添加
+                $(function(){
+                    $.ajaxSetup({#所有的Ajax配置中都会加上下面的内容
+                        beforeSend: function(xhr,settings){
+                            xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
+                        }
+                });
+        如果需求只是一部分函数需要认证CSRF一部分不需要，那么需要加装饰器
+        在views中导入 from django.views.decorators.csrf import csrf_exempt,csrf_protect
+        可以在全局开启CSRF验证，在对少数关闭验证，反之，毅然。
+        @csrf_protect   需要CSRF验证
+        def aaa()
+        @csrf_exempt    不需要CSRF验证
+        def aaa()
+
+
+        对于不是POST的请求来说不需要添加CSRF，在ajaxSetup判断请求的type：
+            function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                }
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+            });
+
+3. Model操作
+
+    a. 字段类型 + 参数
+
+    b. 连表字段 + 参数
+
+    c. Meta
+
+    d. SQL操作：
+        models.TB.object.create()
+        models.TB.object.create(**{})
+        obj = models.TB()
+        obj.save()
+        外键名加_id
+        models.TB.object.all
+        models.TB.object.all()[1:10]
+        models.TB.object.update()
+        models.TB.object.filter()
+        models.TB.object.delete
+        models.TB.object.values
+        models.TB.object.values_list
+        models.TB.object.get()
+        models.TB.object.filter().update()
+        models.TB.object.filter().first()
+        models.TB.object.filter(**{})
+        models.TB.object.filter(**{}).count()
+        models.TB.object.filter(双下划线跨表)
+        models.TB.object.filter(id__gt=1)
+        models.TB.object.filter(id__range=[1,2])
+        models.TB.object.filter(id__in=[1,2,3,4,5,6])
+        models.TB.object.filter(id__lt=1,name='')
+        models.TB.object.filter(id__lte=1)
+        models.TB.object.exclued(id__gte=1)
+
+        多对多：
+            obj.set
+            obj.add(1,2,3)
+            obj.add(*[1,2,3])
+            obj.remove([1,2,3])
+            obj.clear([)
+            obj.all()
+            models.TB.objects.all().order_by('')
+            models.TB.objects.all().distinct('')
+        - 基本增删改查
+        - 进阶操作
+        - 正反查询
+            class A:
+                name.
+                              A.b_set --> B
+            class B:
+                caption
+                fk=forignkey(A)   B.fk  --> A
+        - 其他操作
+
+    e. 验证（弱）
+
+4. Form操作
+    http://www.cnblogs.com/wupeiqi/articles/6144178.html
+    app01.views具体示例
+        定制性高的实现
+            <p>{{ obj.user.label }} {{ obj.user }} {{ obj.errors.user.0 }}</p>
+            <p>{{ obj.pwd }} {{ obj.errors.pwd.0 }}</p>
+            <p>{{ obj.email }}{{ obj.errors.email.0 }}</p>
+            <p>{{ obj.f }}{{ obj.errors.f.0 }}</p>
+        html具体实现还有3种
+            {{ obj.as_p }}
+            {{ obj.as_ul }}
+            <table>{{ obj.as_table }}</table>
+	完成：
+		- 验证用户请求
+		- 生成HTML
+		  （保留上一次提交的数据）
+
+	自定义：
+		- 类
+		    widgets，fields
+		- 字段（校验）
+		- 插件（生成HTML）
+		    (attrs={"class":"c1"})
+
+	初始化操作：
+    (以字典的形式获取数据库中的信息，做初始化渲染：obj = FM(initial=dic))
+    a. Form验证用户请求
+
+    b. Form生成HTML
+
+    c. Form字段详细（自定义字段，Model...） + 插件
+
+    d. 自定义验证(钩子以及__all__)
+
+    e. 注册示例：
+         用户名、密码、邮箱、手机号（RegexValidator或RegexField）、性别、爱好、城市
+
+    f. 初始化值
+
+5. ModelForm
+    (如果程序变的越来越来大，那么ModelForm就必须分离。如果程序不再表大那么可以继续使用ModelForm)
+    a. Model+Form功能集合
+
+    b. save
+
+    c. save + save_m2m
+
+
+
+
+
+
+
+
+
+
+6. 中间件middleware
+    自定义中间件
+        中间件的执行存在于我们之前提到的请求周期中
+        from django.utils.deprecation import MiddlewareMixin
+        中间件在Django中是类形式存在，并且都继承于MiddlewareMixin
+        函数名不能改变
+        class Middle1(MiddlewareMixin):
+            def process_request(self,request):
+                pass
+            def process_view(self, request, view_func, view_func_args, view_func_kwargs):
+                pass
+            def process_response(self, request, response): #参数顺序严格要求
+                return response                            #必须有返回值，不然请求周期到此中断
+            def process_exception(self, request, exception):
+                pass
+            def process_template_response(self,request,response):
+                pass
+    正常请求
+        假设有3个middleware
+            request1 -> request2 -> request3 -> 路由映射匹配(获取view中的回调参数) ->
+            view1 -> view2 -> view3 -> views中的函数 ->
+            response3 -> response2 -> response1
+            X为settings中MIDDLEWATE由上至下逐步增大
+            Django 1.8、9之前
+            如果request1|2执行了return，那么下一个执行response3（最后一个middleware）
+            Djiango 1.10
+            如果request1|2执行了return，那么下一个执行response1|2（当前middleware）
+        views.py函数执行出错
+            那么自动执行 exceptionX(X最接近views) ->exceptionX-1 -> 用户
+            如果有return exceptionX-1 -> exceptionX
+         views.py函数返回值中具有render方法，那么template_response自动执行，如果这里不执行return，那么生命周期到此停止报错。
+             例子：
+                class FOO():
+                    def render():
+             必须使用FOO中的render方法，感觉无卵用
+
+7. 缓存
+
+	5种配置
+	    开发调试(什么都不做)、内存、文件、数据库、Memcache缓存（python-memcached模块、pylibmc模块）
+	文件cache
+	    settings
+	        配置cache，添加cache文件，os.path.join(BASE_DIR,"cache")
+	    函数缓存
+
+	3种应用：
+	    优先级： 全局 > 视图函数 > 模板
+		全局
+            用户获取请求时，经过中间件，缓存在中间件中处理。
+            两个中间件分别处理新缓存和已有缓存
+                from django.middleware.cache import FetchFromCacheMiddleware
+                from django.middleware.cache import UpdateCacheMiddleware
+                MIDDLEWARE = [
+                    'django.middleware.cache.UpdateCacheMiddleware',新连接回复时
+                    其他中间件............
+                    'django.middleware.cache.FetchFromCacheMiddleware',新连接进来
+                ]
+                用户请求进来 -> 中间件request -> FetchFromCacheMiddleware -> 缓存 -> 中间件response -> 用户
+                用户请求进来 -> 中间件 -> FetchFromCacheMiddleware -> views函数 -> 中间件response -> UpdateCacheMiddleware -> 用户
+		视图函数
+		    from django.views.decorators.cache import cache_page
+            @cache_page(X)  X为缓存失效时间单位秒
+            def cache():
+                pass
+		模板
+            {%cache 10 c1%} 单位秒
+                {...}
+            {% endcache %}
+
+8. 信号
+    使得某个操作之前能定制化一些任务
+    - 内置信号
+            pre_init                    # django的model执行其构造方法前，自动触发
+            post_init                   # django的model执行其构造方法后，自动触发
+            pre_save                    # django的model对象保存前，自动触发
+            post_save                   # django的model对象保存后，自动触发
+            pre_delete                  # django的model对象删除前，自动触发
+            post_delete                 # django的model对象删除后，自动触发
+            m2m_changed                 # django的model中使用m2m字段操作第三张表（add,remove,clear）前后，自动触发
+            class_prepared              # 程序启动时，检测已注册的app中modal类，对于每一个类，自动触发
+        Management signals
+            pre_migrate                 # 执行migrate命令前，自动触发
+            post_migrate                # 执行migrate命令后，自动触发
+        Request/response signals
+            request_started             # 请求到来前，自动触发
+            request_finished            # 请求结束后，自动触发
+            got_request_exception       # 请求异常后，自动触发,中间件之前执行
+        Test signals
+            setting_changed             #    使用test测试修改配置文件时，自动触发
+            template_rendered           # 使用test测试渲染模板时，自动触发
+        Database Wrappers
+            connection_created          # 创建数据库连接时，自动触发
+    -导入
+        from django.core.signals import XX00
+
+    -注册函数
+        ☆☆☆☆☆必须将函数import到项目的__init__.py中☆☆☆☆☆
+        signals.py   --->    projectname.__init__.py   import signals.py
+        def a1():
+            pass
+        def a2():
+            pass
+        pre_init.connect(a1)
+        pre_init.connect(a2)
+        顺序执行 a1，a2
+	- 自定义
+		 - 定义信号
+		    import django.dispatch
+            pizza_done = django.dispatch.Signal(providing_args=["toppings", "size"])#触发信号者必须要传递2个参数
+
+		 - 信号中注册函数
+		    def callback(sender, **kwargs):
+                print("callback")
+                print(sender,kwargs)
+            pizza_done.connect(callback)
+
+         - 触发信号
+            自己触发信号(测试)
+		    from 路径 import pizza_done
+            pizza_done.send(sender='seven',toppings=123, size=456)
+
+         实例：
+             服务器CPU、内存等参数超过阀值，自动触发信号
+
+9. simpletages
+
+
+============= 作业:xxxoo管理 =============
+用户验证：session
+新URL：Form验证
+中间件：IP过滤
+信号：记录操作
+CSRF：
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
